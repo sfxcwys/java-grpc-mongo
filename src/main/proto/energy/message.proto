@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package energy;
+
+option java_package = "com.proto.energy";
+option java_multiple_files = true;
+
+message StoreEnergyRequest {
+    int32 spaceship_id = 1;
+    repeated EnergyData data = 2;
+}
+
+message StoreEnergyResponse {
+    // Indicates whether the StoreEnergyRequest is processed successfully.
+    enum Status {
+        SUCCESS = 0;
+        FAILED = 1;
+    }
+}
+
+message EnergyData {
+    // Epoch time of the recorded energy data.
+    int64 time = 1;
+
+    // Amount of energy.
+    int32 value = 2;
+}
+
+service EnergyService {
+    // Stores the information in the request into database.
+    rpc StoreEnergy(StoreEnergyRequest) returns (StoreEnergyResponse) {};
+}
