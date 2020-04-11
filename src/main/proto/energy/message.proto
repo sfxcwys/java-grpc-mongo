@@ -19,8 +19,8 @@ message StoreEnergyResponse {
 }
 
 message EnergyData {
-    // Epoch time of the recorded energy data.
-    int64 time = 1;
+    // Time of the recorded energy data, format yyyy-MM-dd'T'HH:mm:ss
+    string time = 1;
 
     // Amount of energy.
     int32 value = 2;
