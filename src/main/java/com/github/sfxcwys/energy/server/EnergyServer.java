@@ -7,18 +7,19 @@ import java.io.IOException;
 
 public class EnergyServer {
     public static void main(String[] args) throws IOException, InterruptedException {
-        Server server = ServerBuilder.forPort(50051)
-                .addService(new EnergyServiceImpl())
-                .build();
-
-        server.start();
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.out.println("Received Shutdown Request");
-            server.shutdown();
-            System.out.println("Successfully stopped the server");
-        }));
-
-        server.awaitTermination();
+        System.out.println("hello");
+//        Server server = ServerBuilder.forPort(50051)
+//                .addService(new EnergyServiceImpl())
+//                .build();
+//
+//        server.start();
+//
+//        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+//            System.out.println("Received Shutdown Request");
+//            server.shutdown();
+//            System.out.println("Successfully stopped the server");
+//        }));
+//
+//        server.awaitTermination();
     }
 }
