@@ -12,7 +12,7 @@ import org.bson.Document;
 
 public class EnergyServiceImpl extends EnergyServiceGrpc.EnergyServiceImplBase {
 
-    private MongoClient mongoClient = MongoClients.create("mongodv://localhost:27017");
+    private MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
     private MongoDatabase database = mongoClient.getDatabase("mydb");
     private MongoCollection<Document> collection = database.getCollection("energy");
 
