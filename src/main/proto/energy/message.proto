@@ -5,19 +5,30 @@ package energy;
 option java_package = "com.proto.energy";
 option java_multiple_files = true;
 
+// Indicates the status of a request.
+enum Status {
+    SUCCESS = 0;
+    FAILED = 1;
+}
+
 message StoreEnergyRequest {
     int32 spaceship_id = 1;
     repeated EnergyData data = 2;
 }
 
 message StoreEnergyResponse {
-    // Indicates whether the StoreEnergyRequest is processed successfully.
-    enum Status {
-        SUCCESS = 0;
-        FAILED = 1;
-    }
-
     Status status = 1;
+}
+
+message ReadEnergyRequest {
+    int32 spaceship_id = 1;
+    string start_datetime = 2;
+    string end_datetime = 3;
+}
+
+message ReadEnergyResponse {
+    Status status = 1;
+    repeated EnergyData data = 2;
 }
 
 message EnergyData {
@@ -31,4 +42,7 @@ message EnergyData {
 service EnergyService {
     // Stores the information in the request into database.
     rpc StoreEnergy(StoreEnergyRequest) returns (StoreEnergyResponse) {};
+
+    // Query the energy data from the database.
+    rpc ReadEnergy(ReadEnergyRequest) returns (ReadEnergyResponse) {};
 }

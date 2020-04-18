@@ -6,6 +6,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.proto.energy.EnergyData;
 import com.proto.energy.EnergyServiceGrpc;
+import com.proto.energy.Status;
 import com.proto.energy.StoreEnergyRequest;
 import com.proto.energy.StoreEnergyResponse;
 import io.grpc.stub.StreamObserver;
@@ -35,10 +36,10 @@ public class EnergyServiceImpl extends EnergyServiceGrpc.EnergyServiceImplBase {
         try {
             collection.insertMany(docsToInsert);
             System.out.println(String.format("Successfully inserted %d records", docsToInsert.size()));
-            storeEnergyResponseBuilder.setStatus(StoreEnergyResponse.Status.SUCCESS);
+            storeEnergyResponseBuilder.setStatus(Status.SUCCESS);
         } catch (Exception e) {
             System.out.println("Error when inserting into Mongo. Reason: " + e.getMessage());
-            storeEnergyResponseBuilder.setStatus(StoreEnergyResponse.Status.FAILED);
+            storeEnergyResponseBuilder.setStatus(Status.FAILED);
         }
 
         responseObserver.onNext(storeEnergyResponseBuilder.build());
