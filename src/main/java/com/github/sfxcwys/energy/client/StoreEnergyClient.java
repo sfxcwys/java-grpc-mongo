@@ -1,11 +1,13 @@
 package com.github.sfxcwys.energy.client;
 
+import com.google.protobuf.util.Timestamps;
 import com.proto.energy.EnergyData;
 import com.proto.energy.EnergyServiceGrpc;
 import com.proto.energy.StoreEnergyRequest;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -23,14 +25,14 @@ public class StoreEnergyClient {
     List<Integer> secondList = IntStream.rangeClosed(0, 59).boxed().collect(Collectors.toList());
     int spaceshipId = 11;
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, ParseException {
         System.out.println("Hello I'm a gRPC client for StoreEnergy");
 
         StoreEnergyClient main = new StoreEnergyClient();
         main.run();
     }
 
-    private void run() throws InterruptedException {
+    private void run() throws InterruptedException, ParseException {
         ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 50051)
                 .usePlaintext()
                 .build();
@@ -49,7 +51,7 @@ public class StoreEnergyClient {
         }
     }
 
-    private List<EnergyData> generateEnergyData() {
+    private List<EnergyData> generateEnergyData() throws ParseException {
         List<EnergyData> result = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             int year = yearList.get(randomGenerator.nextInt(yearList.size()));
@@ -59,9 +61,9 @@ public class StoreEnergyClient {
             int minute = minuteList.get(randomGenerator.nextInt(minuteList.size()));
             int second = secondList.get(randomGenerator.nextInt(secondList.size()));
             int value = randomGenerator.nextInt(10) + 1;
-            String datetime = String.format("%d-%d-%dT%d:%d:%d", year, month, day, hour, minute, second);
+            String datetime = String.format("%d-%d-%dT%d:%d:%dZ", year, month, day, hour, minute, second);
             result.add(EnergyData.newBuilder()
-                    .setDatetime(datetime)
+                    .setDatetime(Timestamps.parse(datetime))
                     .setValue(value)
                     .build());
         }

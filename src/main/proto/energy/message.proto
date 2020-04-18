@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package energy;
 
+import "google/protobuf/timestamp.proto";
+
 option java_package = "com.proto.energy";
 option java_multiple_files = true;
 
@@ -33,7 +35,7 @@ message ReadEnergyResponse {
 
 message EnergyData {
     // Time of the recorded energy data, format yyyy-MM-dd'T'HH:mm:ss
-    string datetime = 1;
+    google.protobuf.Timestamp datetime = 1;
 
     // Amount of energy.
     int32 value = 2;

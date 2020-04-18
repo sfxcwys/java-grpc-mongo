@@ -1,8 +1,11 @@
 package com.github.sfxcwys.energy.server;
 
+import com.google.protobuf.Timestamp;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.proto.energy.EnergyData;
 import com.proto.energy.EnergyServiceGrpc;
@@ -14,6 +17,7 @@ import com.proto.energy.StoreEnergyResponse;
 import io.grpc.stub.StreamObserver;
 import org.bson.Document;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +29,19 @@ public class EnergyServiceImpl extends EnergyServiceGrpc.EnergyServiceImplBase {
 
     @Override
     public void readEnergy(ReadEnergyRequest request, StreamObserver<ReadEnergyResponse> responseObserver) {
-        super.readEnergy(request, responseObserver);
+        String startDateTime = request.getStartDatetime();
+        String endDateTime = request.getEndDatetime();
+        int spaceshipId = request.getSpaceshipId();
+
+        FindIterable<Document> findIt = collection.find(new Document()
+                .append("spaceship_id", new Document().append("$eq", spaceshipId))
+                .append("datetime", new Document().append("$gte", startDateTime).append("$lte", endDateTime)));
+
+        try (MongoCursor<Document> cursor = findIt.iterator()) {
+            while (cursor.hasNext()) {
+                System.out.println(cursor.next());
+            }
+        }
     }
 
     @Override
@@ -34,8 +50,10 @@ public class EnergyServiceImpl extends EnergyServiceGrpc.EnergyServiceImplBase {
         StoreEnergyResponse.Builder storeEnergyResponseBuilder = StoreEnergyResponse.newBuilder();
 
         for (EnergyData energyData : request.getDataList()) {
+            Timestamp datetime = energyData.getDatetime();
+            Instant instant = Instant.ofEpochSecond(datetime.getSeconds(), datetime.getNanos());
             Document eachDoc = new Document("spaceship_id", request.getSpaceshipId()).append("datetime",
-                    energyData.getDatetime())
+                    instant)
                     .append("value", energyData.getValue());
             docsToInsert.add(eachDoc);
         }
