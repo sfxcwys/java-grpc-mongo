@@ -24,8 +24,8 @@ message StoreEnergyResponse {
 
 message ReadEnergyRequest {
     int32 spaceship_id = 1;
-    string start_datetime = 2;
-    string end_datetime = 3;
+    google.protobuf.Timestamp start_datetime = 2;
+    google.protobuf.Timestamp end_datetime = 3;
 }
 
 message ReadEnergyResponse {

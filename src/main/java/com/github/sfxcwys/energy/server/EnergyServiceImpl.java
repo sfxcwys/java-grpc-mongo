@@ -1,6 +1,7 @@
 package com.github.sfxcwys.energy.server;
 
 import com.google.protobuf.Timestamp;
+import com.google.protobuf.util.Timestamps;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -17,8 +18,10 @@ import com.proto.energy.StoreEnergyResponse;
 import io.grpc.stub.StreamObserver;
 import org.bson.Document;
 
+import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class EnergyServiceImpl extends EnergyServiceGrpc.EnergyServiceImplBase {
@@ -29,19 +32,50 @@ public class EnergyServiceImpl extends EnergyServiceGrpc.EnergyServiceImplBase {
 
     @Override
     public void readEnergy(ReadEnergyRequest request, StreamObserver<ReadEnergyResponse> responseObserver) {
-        String startDateTime = request.getStartDatetime();
-        String endDateTime = request.getEndDatetime();
+        Timestamp startDateTime = request.getStartDatetime();
+        Instant startInstant = Instant.ofEpochSecond(startDateTime.getSeconds(), startDateTime.getNanos());
+
+        Timestamp endDateTime = request.getEndDatetime();
+        Instant endInstant = Instant.ofEpochSecond(endDateTime.getSeconds(), endDateTime.getNanos());
+
         int spaceshipId = request.getSpaceshipId();
 
-        FindIterable<Document> findIt = collection.find(new Document()
-                .append("spaceship_id", new Document().append("$eq", spaceshipId))
-                .append("datetime", new Document().append("$gte", startDateTime).append("$lte", endDateTime)));
+        FindIterable<Document> findIt = collection.find(new Document().append("spaceship_id", new Document().append(
+                "$eq", spaceshipId))
+                .append("datetime", new Document().append("$gte", startInstant)
+                        .append("$lte", endInstant)));
 
+        List<EnergyData> energyDataList = new ArrayList<>();
+        ReadEnergyResponse readEnergyResponse;
         try (MongoCursor<Document> cursor = findIt.iterator()) {
             while (cursor.hasNext()) {
-                System.out.println(cursor.next());
+                Document doc = cursor.next();
+                System.out.println("Document found: " + doc);
+
+                long date = doc.getDate("datetime")
+                        .getTime();
+                Timestamp datetime = Timestamps.fromMillis(date);
+                int value = doc.getInteger("value");
+                energyDataList.add(EnergyData.newBuilder()
+                        .setValue(value)
+                        .setDatetime(datetime)
+                        .build());
             }
+        } catch (Exception e) {
+            readEnergyResponse = ReadEnergyResponse.newBuilder()
+                    .setStatus(Status.FAILED)
+                    .build();
+            responseObserver.onNext(readEnergyResponse);
+            responseObserver.onCompleted();
+
         }
+
+        readEnergyResponse = ReadEnergyResponse.newBuilder()
+                .setStatus(Status.SUCCESS)
+                .addAllData(energyDataList)
+                .build();
+        responseObserver.onNext(readEnergyResponse);
+        responseObserver.onCompleted();
     }
 
     @Override

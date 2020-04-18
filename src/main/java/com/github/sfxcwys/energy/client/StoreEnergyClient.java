@@ -4,6 +4,7 @@ import com.google.protobuf.util.Timestamps;
 import com.proto.energy.EnergyData;
 import com.proto.energy.EnergyServiceGrpc;
 import com.proto.energy.StoreEnergyRequest;
+import com.proto.energy.StoreEnergyResponse;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
@@ -44,9 +45,9 @@ public class StoreEnergyClient {
                     .addAllData(energyData)
                     .setSpaceshipId(spaceshipId)
                     .build();
-            energyClient.storeEnergy(storeEnergyRequest);
-            System.out.println(String.format("Inserted data for spaceshipId %d with %d energyData", spaceshipId,
-                    energyData.size()));
+            StoreEnergyResponse storeEnergyResponse = energyClient.storeEnergy(storeEnergyRequest);
+            System.out.println(String.format("Inserting data for spaceshipId %d with %d energyData with response %s",
+                    spaceshipId, energyData.size(), storeEnergyResponse.getStatus()));
             TimeUnit.SECONDS.sleep(1);
         }
     }
