@@ -16,6 +16,8 @@ message StoreEnergyResponse {
         SUCCESS = 0;
         FAILED = 1;
     }
+
+    Status status = 1;
 }
 
 message EnergyData {
