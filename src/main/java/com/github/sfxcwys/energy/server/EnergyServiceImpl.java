@@ -6,6 +6,8 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.proto.energy.EnergyData;
 import com.proto.energy.EnergyServiceGrpc;
+import com.proto.energy.ReadEnergyRequest;
+import com.proto.energy.ReadEnergyResponse;
 import com.proto.energy.Status;
 import com.proto.energy.StoreEnergyRequest;
 import com.proto.energy.StoreEnergyResponse;
@@ -20,6 +22,11 @@ public class EnergyServiceImpl extends EnergyServiceGrpc.EnergyServiceImplBase {
     private MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
     private MongoDatabase database = mongoClient.getDatabase("mydb");
     private MongoCollection<Document> collection = database.getCollection("energy");
+
+    @Override
+    public void readEnergy(ReadEnergyRequest request, StreamObserver<ReadEnergyResponse> responseObserver) {
+        super.readEnergy(request, responseObserver);
+    }
 
     @Override
     public void storeEnergy(StoreEnergyRequest request, StreamObserver<StoreEnergyResponse> responseObserver) {

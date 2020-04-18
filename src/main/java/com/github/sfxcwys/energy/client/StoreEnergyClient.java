@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class EnergyClient {
+public class StoreEnergyClient {
     private Random randomGenerator = new Random();
     List<Integer> yearList = IntStream.rangeClosed(2019, 2020).boxed().collect(Collectors.toList());
     List<Integer> monthList = IntStream.rangeClosed(1, 12).boxed().collect(Collectors.toList());
@@ -24,9 +24,9 @@ public class EnergyClient {
     int spaceshipId = 11;
 
     public static void main(String[] args) throws InterruptedException {
-        System.out.println("Hello I'm a gRPC client for Energy");
+        System.out.println("Hello I'm a gRPC client for StoreEnergy");
 
-        EnergyClient main = new EnergyClient();
+        StoreEnergyClient main = new StoreEnergyClient();
         main.run();
     }
 
