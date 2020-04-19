@@ -18,17 +18,17 @@ import com.proto.energy.StoreEnergyResponse;
 import io.grpc.stub.StreamObserver;
 import org.bson.Document;
 
-import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class EnergyServiceImpl extends EnergyServiceGrpc.EnergyServiceImplBase {
 
-    private MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
-    private MongoDatabase database = mongoClient.getDatabase("mydb");
-    private MongoCollection<Document> collection = database.getCollection("energy");
+    private MongoCollection<Document> collection;
+
+    public EnergyServiceImpl(MongoCollection<Document> collection) {
+        this.collection = collection;
+    }
 
     @Override
     public void readEnergy(ReadEnergyRequest request, StreamObserver<ReadEnergyResponse> responseObserver) {
@@ -40,7 +40,7 @@ public class EnergyServiceImpl extends EnergyServiceGrpc.EnergyServiceImplBase {
 
         int spaceshipId = request.getSpaceshipId();
 
-        FindIterable<Document> findIt = collection.find(new Document().append("spaceship_id", new Document().append(
+        FindIterable<Document> findIt = this.collection.find(new Document().append("spaceship_id", new Document().append(
                 "$eq", spaceshipId))
                 .append("datetime", new Document().append("$gte", startInstant)
                         .append("$lte", endInstant)));
@@ -93,7 +93,7 @@ public class EnergyServiceImpl extends EnergyServiceGrpc.EnergyServiceImplBase {
         }
 
         try {
-            collection.insertMany(docsToInsert);
+            this.collection.insertMany(docsToInsert);
             System.out.println(String.format("Successfully inserted %d records", docsToInsert.size()));
             storeEnergyResponseBuilder.setStatus(Status.SUCCESS);
         } catch (Exception e) {

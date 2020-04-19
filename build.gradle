@@ -51,4 +51,9 @@ dependencies {
     // https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java-util
     compile group: 'com.google.protobuf', name: 'protobuf-java-util', version: '3.11.4'
 
+    // https://mvnrepository.com/artifact/io.grpc/grpc-testing
+    testCompile group: 'io.grpc', name: 'grpc-testing', version: '1.28.1'
+
+    // https://mvnrepository.com/artifact/de.bwaldvogel/mongo-java-server
+    testCompile group: 'de.bwaldvogel', name: 'mongo-java-server', version: '1.27.0'
 }
